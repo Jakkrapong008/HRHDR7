@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานพัฒนาศักยภาพครูและบุคลากรทางการศึกษา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.7/dayjs.min.js"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8f8f8;
+        }
+        .tab-active {
+            color: #fff;
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .loader {
+            border-top-color: #dc2626;
+            animation: spinner 1s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1), 0 2px 4px -1px rgba(220, 38, 38, 0.06);
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="header-gradient text-white py-6 shadow-lg">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col items-center justify-center">
+                    <img src="https://img2.pic.in.th/pic/logo-HDR.th.png" alt="โลโก้โรงเรียน" class="h-24 mb-4">
+                    <h1 class="text-3xl md:text-4xl font-bold text-center">งานพัฒนาศักยภาพครูและบุคลากรทางการศึกษา</h1>
+                    <h2 class="text-xl md:text-2xl mt-2 text-center">โรงเรียนหางดงรัฐราษฎร์อุปถัมภ์</h2>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <!-- Tabs -->
+            <div class="flex flex-wrap mb-6 border-b border-gray-200">
+                <button id="tab-1" class="tab-active px-6 py-3 text-lg font-medium rounded-t-lg mr-2">หนังสือประชาสัมพันธ์</button>
+                <button id="tab-2" class="text-gray-700 hover:text-red-600 px-6 py-3 text-lg font-medium rounded-t-lg">การอบรมออนไลน์</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tab-content-1" class="tab-content">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <h3 class="text-2xl font-semibold text-red-700 mb-6">ค้นหาหนังสือประชาสัมพันธ์</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- ประเภท -->
+                        <div>
+                            <label for="type-filter" class="block text-gray-700 font-medium mb-2">ประเภท</label>
+                            <select id="type-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="all">ทั้งหมด</option>
+                                <option value="การอบรม">การอบรม</option>
+                                <option value="การประกวด">การประกวด</option>
+                                <option value="ประกาศทั่วไป">ประกาศทั่วไป</option>
+                            </select>
+                        </div>
+                        
+                        <!-- วันที่จัดกิจกรรม -->
+                        <div>
+                            <label for="date-filter" class="block text-gray-700 font-medium mb-2">วันที่จัดกิจกรรม</label>
+                            <select id="date-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="all">ทั้งหมด</option>
+                                <option value="upcoming">อยู่ในกำหนดเวลา</option>
+                                <option value="expired">หมดเวลา</option>
+                            </select>
+                        </div>
+                        
+                        <!-- ชื่อกิจกรรม -->
+                        <div>
+                            <label for="activity-search" class="block text-gray-700 font-medium mb-2">ชื่อกิจกรรม</label>
+                            <input type="text" id="activity-search" placeholder="ค้นหาชื่อกิจกรรม" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center mt-4 mb-6">
+                        <button id="search-btn" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            ค้นหา
+                        </button>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loading-1" class="hidden flex justify-center my-8">
+                        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                    </div>
+                    
+                    <!-- Results Table -->
+                    <div id="results-container" class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-red-600 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">ประเภท</th>
+                                    <th class="py-3 px-4 text-left">วันที่จัดกิจกรรม</th>
+                                    <th class="py-3 px-4 text-left">ชื่อกิจกรรม</th>
+                                    <th class="py-3 px-4 text-left">หน่วยงาน</th>
+                                    <th class="py-3 px-4 text-left">รายละเอียด</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- No Results Message -->
+                    <div id="no-results" class="hidden text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-gray-500 text-lg">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-content-2" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <h3 class="text-2xl font-semibold text-red-700 mb-6">แพลตฟอร์มการอบรมออนไลน์สำหรับครู</h3>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loading-2" class="hidden flex justify-center my-8">
+                        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                    </div>
+                    
+                    <!-- Platform Cards -->
+                    <div id="platform-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p>© 2025 โรงเรียนหางดงรัฐราษฎร์อุปถัมภ์ - งานพัฒนาศักยภาพครูและบุคลากรทางการศึกษา</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // API URL for Google Apps Script
+        // *** IMPORTANT: Replace this URL with your actual deployed Google Apps Script Web App URL ***
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyQzbP9e69WeoLVVv9OqSVqkeyzIcMZky-CLENApccUOMS-Lb665IByiyft4vEe_wxwdQ/exec'; // Example: https://script.google.com/macros/s/AKfycbyQzbP9e69WeoLVVv9OqSVqkeyzIcMZky-CLENApccOOMS-Lb665IByiyft4vEe_wxwdQ/exec';
+
+        // Tab switching functionality
+        document.getElementById('tab-1').addEventListener('click', () => switchTab(1));
+        document.getElementById('tab-2').addEventListener('click', () => switchTab(2));
+        
+        // Function to switch between tabs
+        function switchTab(tabNumber) {
+            // Update tab buttons' active state
+            document.getElementById('tab-1').classList.toggle('tab-active', tabNumber === 1);
+            document.getElementById('tab-2').classList.toggle('tab-active', tabNumber === 2);
+            document.getElementById('tab-1').classList.toggle('text-gray-700', tabNumber !== 1);
+            document.getElementById('tab-2').classList.toggle('text-gray-700', tabNumber !== 2);
+            
+            // Show/hide tab content
+            document.getElementById('tab-content-1').classList.toggle('hidden', tabNumber !== 1);
+            document.getElementById('tab-content-2').classList.toggle('hidden', tabNumber !== 2);
+            
+            // Load data for the selected tab if not already loaded
+            if (tabNumber === 1 && document.getElementById('results-body').childElementCount === 0) { // Check if results-body is empty
+                fetchAnnouncementData();
+            } else if (tabNumber === 2 && document.getElementById('platform-cards').childElementCount === 0) { // Check if platform-cards is empty
+                fetchPlatformData();
+            }
+        }
+        
+        // Search button functionality for Tab 1
+        document.getElementById('search-btn').addEventListener('click', filterAnnouncementData);
+        
+        // Initial data loading when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAnnouncementData(); // Load data for Tab 1 by default
+        });
+        
+        // Asynchronously fetches announcement data from Sheet 101
+        async function fetchAnnouncementData() {
+            showLoading('loading-1'); // Show loading indicator for Tab 1
+            try {
+                const response = await fetch(`${API_URL}?sheet=101`);
+                const data = await response.json();
+                
+                // Log the raw data received from Google Sheet Apps Script for debugging
+                console.log('Raw data from Sheet 101:', data);
+
+                if (data && data.data) {
+                    window.announcementData = data.data; // Store fetched data globally for filtering
+                    filterAnnouncementData(); // Apply filters and display results
+                } else {
+                    showNoResults(); // Show no results message if no data
+                }
+            } catch (error) {
+                console.error('Error fetching announcement data:', error);
+                showNoResults(); // Show no results on error
+            } finally {
+                hideLoading('loading-1'); // Hide loading indicator
+            }
+        }
+        
+        // Filters announcement data based on user input
+        function filterAnnouncementData() {
+            if (!window.announcementData) return; // Exit if no data is available
+            
+            const typeFilter = document.getElementById('type-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+            const activitySearch = document.getElementById('activity-search').value.toLowerCase();
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today's date for accurate comparison
+            
+            let filteredData = window.announcementData.filter(item => {
+                // Filter by type
+                if (typeFilter !== 'all' && item.ประเภท !== typeFilter) return false;
+                
+                // Filter by activity name (case-insensitive)
+                if (activitySearch && !item.ชื่อกิจกรรม.toLowerCase().includes(activitySearch)) return false;
+                
+                // Filter by date
+                if (dateFilter !== 'all') {
+                    const activityDate = parseThaiDate(item.วันที่จัดกิจกรรม);
+                    if (isNaN(activityDate.getTime())) return false; // Skip if date is invalid
+
+                    // If 'upcoming', only include dates on or after today
+                    if (dateFilter === 'upcoming' && activityDate < today) {
+                        return false;
+                    }
+                    // If 'expired', only include dates before today
+                    if (dateFilter === 'expired' && activityDate >= today) {
+                        return false;
+                    }
+                }
+                
+                return true; // Include item if all filters pass
+            });
+            
+            // Sort by date (newest first)
+            filteredData.sort((a, b) => {
+                const dateA = parseThaiDate(a.วันที่จัดกิจกรรม);
+                const dateB = parseThaiDate(b.วันที่จัดกิจกรรม);
+                // Handle invalid dates for sorting
+                if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                if (isNaN(dateA.getTime())) return 1; // Invalid date A comes after valid date B
+                if (isNaN(dateB.getTime())) return -1; // Valid date A comes after invalid date B
+                return dateB.getTime() - dateA.getTime();
+            });
+            
+            displayAnnouncementResults(filteredData); // Display the filtered data
+        }
+        
+        // Parses various date inputs (Date objects or strings) into a normalized Date object
+        function parseThaiDate(dateInput) {
+            if (dateInput instanceof Date) {
+                // If it's already a Date object, normalize to start of day and return
+                dateInput.setHours(0, 0, 0, 0);
+                return dateInput;
+            }
+            
+            // If it's a string, try to parse it
+            if (typeof dateInput === 'string' && dateInput.trim() !== '') {
+                // Try parsing as a standard JS Date first (e.g., "YYYY-MM-DD" or "MM/DD/YYYY")
+                let parsedDate = new Date(dateInput);
+                if (!isNaN(parsedDate.getTime())) {
+                    parsedDate.setHours(0, 0, 0, 0);
+                    return parsedDate;
+                }
+
+                // If standard parsing fails, try DD/MM/YYYY or DD/MM/BBBB (Buddhist Year) format
+                const parts = dateInput.split('/');
+                if (parts.length === 3) {
+                    let year = parseInt(parts[2]);
+                    const month = parseInt(parts[1]) - 1; // Month is 0-indexed in JavaScript Date
+                    const day = parseInt(parts[0]);
+
+                    // Assume if year is > 2500, it's a Thai Buddhist year and convert to Gregorian
+                    if (year > 2500) { 
+                        year -= 543;
+                    }
+                    
+                    const date = new Date(year, month, day);
+                    date.setHours(0, 0, 0, 0); // Normalize to start of day
+                    return date;
+                }
+            }
+            
+            // Return an invalid date if input is not valid or cannot be parsed
+            return new Date(NaN); 
+        }
+        
+        // Formats a Date object into DD/MM/YYYY (Buddhist Year) string
+        function formatDate(dateStr) {
+            const date = parseThaiDate(dateStr);
+            if (isNaN(date.getTime())) return '-'; // Return '-' for invalid dates
+            
+            // Use 'th-TH' locale with numeric parts to get DD/MM/YYYY (Buddhist Year)
+            const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('th-TH', options);
+        }
+        
+        // Displays announcement results in the table
+        function displayAnnouncementResults(data) {
+            const resultsBody = document.getElementById('results-body');
+            const noResults = document.getElementById('no-results');
+            
+            resultsBody.innerHTML = ''; // Clear previous results
+            
+            if (data.length === 0) {
+                noResults.classList.remove('hidden'); // Show no results message
+                return;
+            }
+            
+            noResults.classList.add('hidden'); // Hide no results message
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                
+                // Type column with badge
+                const typeCell = document.createElement('td');
+                typeCell.className = 'py-3 px-4';
+                const typeBadge = document.createElement('span');
+                typeBadge.className = 'px-2 py-1 rounded-full text-xs font-medium';
+                
+                // Set badge color based on type
+                switch (item.ประเภท) {
+                    case 'การอบรม':
+                        typeBadge.className += ' bg-blue-100 text-blue-800';
+                        break;
+                    case 'การประกวด':
+                        typeBadge.className += ' bg-green-100 text-green-800';
+                        break;
+                    case 'ประกาศทั่วไป':
+                        typeBadge.className += ' bg-yellow-100 text-yellow-800';
+                        break;
+                    default:
+                        typeBadge.className += ' bg-gray-100 text-gray-800';
+                }
+                
+                typeBadge.textContent = item.ประเภท;
+                typeCell.appendChild(typeBadge);
+                row.appendChild(typeCell);
+                
+                // Date column
+                const dateCell = document.createElement('td');
+                dateCell.className = 'py-3 px-4';
+                dateCell.textContent = formatDate(item.วันที่จัดกิจกรรม); // Use the updated formatDate function
+                row.appendChild(dateCell);
+                
+                // Activity name column
+                const nameCell = document.createElement('td');
+                nameCell.className = 'py-3 px-4 font-medium';
+                nameCell.textContent = item.ชื่อกิจกรรม;
+                row.appendChild(nameCell);
+                
+                // Organization column
+                const orgCell = document.createElement('td');
+                orgCell.className = 'py-3 px-4';
+                orgCell.textContent = item.หน่วยงาน;
+                row.appendChild(orgCell);
+                
+                // Link column
+                const linkCell = document.createElement('td');
+                linkCell.className = 'py-3 px-4';
+                
+                if (item.Link) {
+                    const link = document.createElement('a');
+                    link.href = item.Link;
+                    link.target = '_blank';
+                    link.className = 'text-red-600 hover:text-red-800 flex items-center';
+                    link.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        รายละเอียด
+                    `;
+                    linkCell.appendChild(link);
+                } else {
+                    linkCell.textContent = '-';
+                }
+                
+                row.appendChild(linkCell);
+                resultsBody.appendChild(row);
+            });
+        }
+        
+        // Asynchronously fetches platform data from Sheet 102
+        async function fetchPlatformData() {
+            showLoading('loading-2'); // Show loading indicator for Tab 2
+            try {
+                const response = await fetch(`${API_URL}?sheet=102`);
+                const data = await response.json();
+                
+                // Log the raw data received from Google Sheet Apps Script for debugging
+                console.log('Raw data from Sheet 102:', data);
+
+                if (data && data.data) {
+                    displayPlatformCards(data.data); // Display platform cards
+                } else {
+                     document.getElementById('platform-cards').innerHTML = '<p class="text-center col-span-full text-gray-500">ไม่พบข้อมูลแพลตฟอร์ม</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching platform data:', error);
+                document.getElementById('platform-cards').innerHTML = '<p class="text-center col-span-full text-gray-500">ไม่สามารถโหลดข้อมูลได้</p>';
+            } finally {
+                hideLoading('loading-2'); // Hide loading indicator
+            }
+        }
+        
+        // Displays platform cards in Tab 2
+        function displayPlatformCards(data) {
+            const cardsContainer = document.getElementById('platform-cards');
+            cardsContainer.innerHTML = ''; // Clear previous cards
+            
+            if (data.length === 0) {
+                cardsContainer.innerHTML = '<p class="text-center col-span-full text-gray-500">ไม่พบข้อมูลแพลตฟอร์ม</p>';
+                return;
+            }
+            
+            data.forEach(platform => {
+                const card = document.createElement('div');
+                card.className = 'card bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
+                
+                // Use provided logo or generate a default one
+                // IMPORTANT: Ensure the column header in Sheet 102 for the logo link is exactly "Logo" (case-sensitive)
+                const logoUrl = platform.Logo || createDefaultLogo(platform.ชื่อแพลตฟอร์ม); 
+                
+                card.innerHTML = `
+                    <div class="h-56 bg-gray-100 flex items-center justify-center p-4">
+                        <img src="${logoUrl}" onerror="this.onerror=null;this.src='${createDefaultLogo(platform.ชื่อแพลตฟอร์ม)}';" alt="${platform.ชื่อแพลตฟอร์ม}" class="max-h-full max-w-full object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">${platform.ชื่อแพลตฟอร์ม}</h4>
+                        <p class="text-gray-600 mb-4">${platform.หลักสูตรเด่นสำหรับครู || 'ไม่มีข้อมูลหลักสูตร'}</p>
+                        <a href="${platform.URL}" target="_blank" class="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-2 px-4 rounded-lg transition duration-300">
+                            เข้าสู่แพลตฟอร์ม
+                        </a>
+                    </div>
+                `;
+                
+                cardsContainer.appendChild(card);
+            });
+        }
+        
+        // Creates a default SVG logo with initials if no logo URL is provided or if the provided URL fails to load
+        function createDefaultLogo(name) {
+            if (!name) name = 'Platform';
+            const initials = name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase();
+            const colors = ['#dc2626', '#991b1b', '#7f1d1d', '#ef4444', '#b91c1c'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+                    <rect width="200" height="200" fill="${randomColor}" />
+                    <text x="100" y="115" font-family="Arial" font-size="80" font-weight="bold" text-anchor="middle" fill="white">${initials}</text>
+                </svg>
+            `;
+            
+            return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+        }
+        
+        // Shows a loading indicator by removing the 'hidden' class
+        function showLoading(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        
+        // Hides a loading indicator by adding the 'hidden' class
+        function hideLoading(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+        
+        // Shows the 'no results' message
+        function showNoResults() {
+            document.getElementById('no-results').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
