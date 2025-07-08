@@ -119,6 +119,7 @@
                                     <th class="py-3 px-4 text-left">ชื่อกิจกรรม</th>
                                     <th class="py-3 px-4 text-left">หน่วยงาน</th>
                                     <th class="py-3 px-4 text-left">รายละเอียด</th>
+                                    <th class="py-3 px-4 text-left">รายละเอียด2</th> <!-- New column header -->
                                 </tr>
                             </thead>
                             <tbody id="results-body">
@@ -383,7 +384,7 @@
                 orgCell.textContent = item.หน่วยงาน;
                 row.appendChild(orgCell);
                 
-                // Link column
+                // Link column (รายละเอียด)
                 const linkCell = document.createElement('td');
                 linkCell.className = 'py-3 px-4';
                 
@@ -402,8 +403,29 @@
                 } else {
                     linkCell.textContent = '-';
                 }
-                
                 row.appendChild(linkCell);
+
+                // New column: รายละเอียด2 (เอกสารแนบ)
+                const attachmentCell = document.createElement('td');
+                attachmentCell.className = 'py-3 px-4';
+
+                if (item.เอกสารแนบ) { // Check if 'เอกสารแนบ' column has data
+                    const attachmentLink = document.createElement('a');
+                    attachmentLink.href = item.เอกสารแนบ;
+                    attachmentLink.target = '_blank';
+                    attachmentLink.className = 'text-red-600 hover:text-red-800 flex items-center';
+                    attachmentLink.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                        เอกสารแนบ
+                    `;
+                    attachmentCell.appendChild(attachmentLink);
+                } else {
+                    attachmentCell.textContent = '-';
+                }
+                row.appendChild(attachmentCell);
+
                 resultsBody.appendChild(row);
             });
         }
